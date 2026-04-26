@@ -54,7 +54,7 @@ COLORS = {k: v["color"] for k, v in COMM_CONFIG.items()}
 MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
 _D = dict(
-    template="plotly_dark",
+    template="plotly_white",
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="-apple-system,Helvetica Neue,sans-serif", color=BLACK, size=10),
