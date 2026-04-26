@@ -9,25 +9,16 @@ import streamlit as st
 from pathlib import Path
 
 st.set_page_config(page_title="Roll Yield Monitor", layout="wide", initial_sidebar_state="collapsed")
-st.markdown("""
-<style>
-[data-testid="stAppViewContainer"] {
-    background:
-        radial-gradient(ellipse 70% 60% at 20% 80%, rgba(26,74,90,.50) 0%, transparent 65%),
-        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(42,85,104,.45) 0%, transparent 60%),
-        radial-gradient(ellipse 80% 70% at 50% 30%, rgba(79,176,200,.10) 0%, transparent 55%),
-        #0D1620;
-    background-attachment: fixed;
-}
-[data-testid="stHeader"] {
-    background: rgba(13,22,32,.85) !important;
-    backdrop-filter: saturate(180%) blur(16px);
-    -webkit-backdrop-filter: saturate(180%) blur(16px);
-    border-bottom: 1px solid rgba(188,212,222,.14);
-}
-.block-container { padding-top: 2rem !important; padding-bottom: 1.5rem; max-width: 1500px; }
-</style>
-""", unsafe_allow_html=True)
+st.markdown("""<style>
+  [data-testid="stAppViewContainer"],[data-testid="stMain"],.main{background:#fafafa!important;color:#1d1d1f!important}
+  [data-testid="stHeader"]{background:transparent!important}
+  .block-container{padding-top:2rem!important;padding-bottom:1.5rem;max-width:1500px}
+  hr{border:none!important;border-top:1px solid #e8e8ed!important;margin:.4rem 0!important}
+  [data-testid="stRadio"] label,[data-testid="stRadio"] label p{color:#1d1d1f!important}
+  [data-testid="stExpander"]{border:1px solid #e8e8ed!important;border-radius:8px!important;background:#fff!important}
+  h1,h2,h3{color:#1d1d1f!important}
+  html,body,[class*="css"]{color:#1d1d1f!important}
+</style>""", unsafe_allow_html=True)
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 NAVY  = "#0a2463"
