@@ -84,9 +84,13 @@ def save(new: pd.DataFrame, incremental: bool):
     if incremental and OUT.exists():
         old = pd.read_parquet(OUT)
         old["Date"] = pd.to_datetime(old["Date"])
-        old = old[old["Date"] < new["Date"].min()]
-        df = pd.concat([old, new], ignore_index=True).sort_values(["Commodity", "Date"])
-        log.info(f"Appended {len(new)} rows to {len(old)} existing")
+        # Per-commodity cutoff — avoids gaps if one commodity returns fewer days
+        filtered = old.copy()
+        for comm, grp in new.groupby("Commodity"):
+            cutoff = grp["Date"].min()
+            filtered = filtered[~((filtered["Commodity"] == comm) & (filtered["Date"] >= cutoff))]
+        df = pd.concat([filtered, new], ignore_index=True).sort_values(["Commodity", "Date"])
+        log.info(f"Upserted {len(new)} rows into {len(filtered)} existing")
     else:
         df = new
     OUT.parent.mkdir(parents=True, exist_ok=True)
