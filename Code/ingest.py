@@ -9,6 +9,9 @@ import logging
 import pandas as pd
 import icepython as ice
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
+
+FETCH_TIMEOUT = 60  # seconds per symbol before giving up
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)-8s  %(message)s")
 log = logging.getLogger(__name__)
@@ -44,7 +47,7 @@ def _start() -> tuple[str, bool]:
 
 
 def _fetch(sym: str, start: str) -> pd.Series:
-    try:
+    def _call():
         raw = ice.get_timeseries(sym, ["Settle"], granularity="D", start_date=start, end_date=TODAY)
         if not raw or len(raw) < 2:
             return pd.Series(dtype=float, name=sym)
@@ -53,6 +56,13 @@ def _fetch(sym: str, start: str) -> pd.Series:
         df["Time"] = pd.to_datetime(df["Time"])
         df = df.set_index("Time")
         return df[header[1]].rename(sym)
+
+    try:
+        with ThreadPoolExecutor(max_workers=1) as ex:
+            return ex.submit(_call).result(timeout=FETCH_TIMEOUT)
+    except FuturesTimeout:
+        log.warning(f"  {sym}: timed out after {FETCH_TIMEOUT}s — ICE Connect not responding")
+        return pd.Series(dtype=float, name=sym)
     except Exception as e:
         log.warning(f"  {sym}: {e}")
         return pd.Series(dtype=float, name=sym)
