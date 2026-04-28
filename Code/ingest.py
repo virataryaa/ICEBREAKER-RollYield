@@ -77,6 +77,9 @@ def build(start: str) -> pd.DataFrame:
         keep = ["Date", "Commodity", "Spot", "OneYr", "Roll_Yield_1yr"] + [f"c{i}" for i in range(1, 9)]
         rows.append(df[[c for c in keep if c in df.columns]])
         log.info(f"  {len(df)} rows | roll = {df['Roll_Yield_1yr'].iloc[-1]:.2%}")
+    if not rows:
+        log.error("All commodities returned no data — ICE Connect may be down or not logged in")
+        return pd.DataFrame()
     return pd.concat(rows, ignore_index=True)
 
 
@@ -100,8 +103,13 @@ def save(new: pd.DataFrame, incremental: bool):
 
 
 if __name__ == "__main__":
+    import sys
     log.info("=" * 50 + f"\nRoll Yield Ingest | {TODAY}\n" + "=" * 50)
     start, incremental = _start()
     new = build(start)
+    if new.empty:
+        log.error("Nothing to save — exiting with error")
+        log.info("=" * 50)
+        sys.exit(1)
     save(new, incremental)
     log.info("=" * 50)
